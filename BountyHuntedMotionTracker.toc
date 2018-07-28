@@ -1,0 +1,9 @@
+## Title: Bounty Hunted Motion Tracker
+## Version: 1.0-alpha
+## Author: Limi
+## Interface: 80000
+## Notes: Mimics the sound effects of the Aliens motion tracker for Warmode Bounty Hunted targets
+
+libs\LibStub\LibStub.lua
+libs\HereBeDragons\HereBeDragons-2.0.lua
+main.lua
