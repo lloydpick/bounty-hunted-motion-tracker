@@ -1,5 +1,5 @@
 ## Title: Bounty Hunted Motion Tracker
-## Version: 1.0-alpha
+## Version: @project-version@
 ## Author: Limi
 ## Interface: 80000
 ## Notes: Mimics the sound effects of the Aliens motion tracker for Warmode Bounty Hunted targets
