@@ -1,0 +1,4 @@
+﻿ignore:
+    - .gitattributes
+    - BountyHuntedMotionTracker.wowproj
+	- BountyHuntedMotionTracker.wowproj.user

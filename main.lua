@@ -1,5 +1,5 @@
-BountyHuntedMotionTracker = {}
-local BountyHuntedMotionTracker = BountyHuntedMotionTracker
+BountyHuntedMotionTracker = LibStub("AceAddon-3.0"):NewAddon("BountyHuntedMotionTracker", "AceConsole-3.0", "AceEvent-3.0")
+
 BountyHuntedMotionTracker.ShouldPlayVeryFastSound 		= false
 BountyHuntedMotionTracker.ShouldPlayFastSound 			= false
 BountyHuntedMotionTracker.ShouldPlayNormalSound 		= false
@@ -7,7 +7,94 @@ BountyHuntedMotionTracker.ShouldPlaySlowSound 			= false
 BountyHuntedMotionTracker.ShouldPlayVerySlowSound 		= false
 BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound 	= false
 
+local defaults = {
+    profile = {
+        channel = "Master"
+    },
+}
+
+local options = { 
+    name = "Bounty Hunted Motion Tracker",
+    handler = BountyHuntedMotionTracker,
+    type = "group",
+    args = {
+		general = {
+			type = "group",
+			name = "General",
+			args = {
+				channel = {
+					type = "select",
+					name = "Sound Channel",
+					desc = "The sound channel to use.",
+					values = function()
+						sound_channels = {
+							["Master"] = "Master",
+							["SFX"] = "SFX",
+							["Ambience"] = "Ambience",
+							["Music"] = "Music"
+						}
+						return sound_channels
+					end,
+					get = function(info) return BountyHuntedMotionTracker.db.profile.channel end,
+					set = function(info,val) BountyHuntedMotionTracker.db.profile.channel = val end
+				},
+			}
+		},
+		profiles = {
+			type = "group",
+			name = "Profiles",
+			args = {}
+		}
+    },
+}
+
 local hbd = LibStub("HereBeDragons-2.0")
+
+function BountyHuntedMotionTracker:Refresh()
+	db = self.db.profile
+end
+
+function BountyHuntedMotionTracker:OnInitialize()
+    -- Called when the addon is loaded
+	self.db = LibStub("AceDB-3.0"):New("BountyHuntedMotionTrackerDB", defaults, true);
+	self.db.RegisterCallback(self, "OnProfileChanged", "Refresh")
+	self.db.RegisterCallback(self, "OnProfileCopied", "Refresh")
+	self.db.RegisterCallback(self, "OnProfileReset", "Refresh")
+	
+	options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("BountyHuntedMotionTracker", options)
+	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BountyHuntedMotionTracker", "Bounty Hunted Motion Tracker")
+    self:RegisterChatCommand("bountyhunted", "ChatCommand")
+    self:RegisterChatCommand("bh", "ChatCommand")
+end
+
+function BountyHuntedMotionTracker:OnEnable()
+    -- Called when the addon is enabled
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+end
+
+function BountyHuntedMotionTracker:OnDisable()
+    -- Called when the addon is disabled
+end
+
+function BountyHuntedMotionTracker:ChatCommand(input)
+    if not input or input:trim() == "" then
+        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+    else
+        LibStub("AceConfigCmd-3.0"):HandleCommand("bh", "BountyHuntedMotionTracker", input)
+    end
+end
+
+function BountyHuntedMotionTracker:PLAYER_ENTERING_WORLD()
+    BountyHuntedMotionTracker.StartScanner()
+		
+	BountyHuntedMotionTracker.StartVeryFastTimer()
+	BountyHuntedMotionTracker.StartFastTimer()
+	BountyHuntedMotionTracker.StartNormalTimer()
+	BountyHuntedMotionTracker.StartSlowTimer()
+	BountyHuntedMotionTracker.StartVerySlowTimer()
+	BountyHuntedMotionTracker.StartVeryVerySlowTimer()
+end
 
 function spairs(t, order)
     -- collect the keys
@@ -30,20 +117,6 @@ function spairs(t, order)
             return keys[i], t[keys[i]]
         end
     end
-end
-
-function BountyHuntedMotionTracker.OnEvent(self, event, arg1, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		BountyHuntedMotionTracker.MainFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		BountyHuntedMotionTracker.StartScanner()
-		
-		BountyHuntedMotionTracker.StartVeryFastTimer()
-		BountyHuntedMotionTracker.StartFastTimer()
-		BountyHuntedMotionTracker.StartNormalTimer()
-		BountyHuntedMotionTracker.StartSlowTimer()
-		BountyHuntedMotionTracker.StartVerySlowTimer()
-		BountyHuntedMotionTracker.StartVeryVerySlowTimer()
-	end
 end
 
 function BountyHuntedMotionTracker.GetPlayerPosition()
@@ -138,37 +211,37 @@ end
 
 function BountyHuntedMotionTracker.PlayVeryFastSound()
 	if BountyHuntedMotionTracker.ShouldPlayVeryFastSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-5.mp3")
+		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-5.mp3", BountyHuntedMotionTracker.db.profile.channel)
 	end
 end
 
 function BountyHuntedMotionTracker.PlayFastSound()
 	if BountyHuntedMotionTracker.ShouldPlayFastSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-4.mp3")
+		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-4.mp3", BountyHuntedMotionTracker.db.profile.channel)
 	end
 end
 
 function BountyHuntedMotionTracker.PlayNormalSound()
 	if BountyHuntedMotionTracker.ShouldPlayNormalSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-3.mp3")
+		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-3.mp3", BountyHuntedMotionTracker.db.profile.channel)
 	end
 end
 
 function BountyHuntedMotionTracker.PlaySlowSound()
 	if BountyHuntedMotionTracker.ShouldPlaySlowSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-2.mp3")
+		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-2.mp3", BountyHuntedMotionTracker.db.profile.channel)
 	end
 end
 
 function BountyHuntedMotionTracker.PlayVerySlowSound()
 	if BountyHuntedMotionTracker.ShouldPlayVerySlowSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-1.mp3")
+		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-1.mp3", BountyHuntedMotionTracker.db.profile.channel)
 	end
 end
 
 function BountyHuntedMotionTracker.PlayVeryVerySlowSound()
 	if BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-0.mp3")
+		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-0.mp3", BountyHuntedMotionTracker.db.profile.channel)
 	end
 end
 
@@ -195,8 +268,3 @@ end
 function BountyHuntedMotionTracker.StartVeryVerySlowTimer()
 	C_Timer.NewTicker(16, BountyHuntedMotionTracker.PlayVeryVerySlowSound)
 end
-
-BountyHuntedMotionTracker.MainFrame = CreateFrame("Frame")
-BountyHuntedMotionTracker.MainFrame:Hide()
-BountyHuntedMotionTracker.MainFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-BountyHuntedMotionTracker.MainFrame:SetScript("OnEvent", BountyHuntedMotionTracker.OnEvent)

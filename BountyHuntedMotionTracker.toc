@@ -3,7 +3,9 @@
 ## Author: Limi
 ## Interface: 80000
 ## Notes: Mimics the sound effects of the Aliens motion tracker for Warmode Bounty Hunted targets
+## SavedVariables: BountyHuntedMotionTrackerDB
+## OptionalDeps: Ace3
+## X-Embeds: Ace3
 
-libs\LibStub\LibStub.lua
-libs\HereBeDragons\HereBeDragons-2.0.lua
+embeds.xml
 main.lua
