@@ -6,6 +6,7 @@ BountyHuntedMotionTracker.ShouldPlayNormalSound 		= false
 BountyHuntedMotionTracker.ShouldPlaySlowSound 			= false
 BountyHuntedMotionTracker.ShouldPlayVerySlowSound 		= false
 BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound 	= false
+BountyHuntedMotionTracker.Bounties = {}
 
 local defaults = {
     profile = {
@@ -144,9 +145,19 @@ function BountyHuntedMotionTracker.GetVignettes()
 			vX, vY = vignette:GetPosition()
 			distance = BountyHuntedMotionTracker.GetDistanceTo(zone, pX, pY, vX, vY)
 			vignette.DistanceToPlayer = distance
-			table.insert(vignettes, vignette)
+			
+			-- some sanity checking on the vignette
+			name = vignette.vignetteInfo.atlasName
+			print(name)
+			if name == "poi-bountyplayer-alliance" or name == "poi-bountyplayer-horde" then
+				print("insertted")
+				table.insert(vignettes, vignette)
+			end
 		end
 	end
+	
+	BountyHuntedMotionTracker.Bounties = vignettes
+	return vignettes
 	
 	--if WorldMapFrame.pinPools and WorldMapFrame.pinPools.WorldMap_WorldQuestPinTemplate and WorldMapFrame.pinPools.WorldMap_WorldQuestPinTemplate.activeObjects then
 	--	for vignette,_ in pairs(WorldMapFrame.pinPools.WorldMap_WorldQuestPinTemplate.activeObjects) do
@@ -156,8 +167,6 @@ function BountyHuntedMotionTracker.GetVignettes()
 	--		table.insert(vignettes, vignette)
 	--	end
 	--end
-	
-	return vignettes
 end
 
 function BountyHuntedMotionTracker.OrderVignettesByDistance()
