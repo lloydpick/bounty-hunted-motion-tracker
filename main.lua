@@ -6,7 +6,6 @@ BountyHuntedMotionTracker.ShouldPlayNormalSound 		= false
 BountyHuntedMotionTracker.ShouldPlaySlowSound 			= false
 BountyHuntedMotionTracker.ShouldPlayVerySlowSound 		= false
 BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound 	= false
-BountyHuntedMotionTracker.Scanner = nil
 
 local defaults = {
     profile = {
@@ -72,7 +71,7 @@ end
 function BountyHuntedMotionTracker:OnEnable()
     -- Called when the addon is enabled
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:RegisterEvent("VIGNETTES_UPDATED")
 end
 
 function BountyHuntedMotionTracker:OnDisable()
@@ -88,21 +87,14 @@ function BountyHuntedMotionTracker:ChatCommand(input)
     end
 end
 
-function BountyHuntedMotionTracker:ZONE_CHANGED_NEW_AREA()
+function BountyHuntedMotionTracker:VIGNETTES_UPDATED()
+	print("VIGNETTES_UPDATED")
 	if (C_PvP.IsWarModeActive() == true) then
-		BountyHuntedMotionTracker.StartScanner()
-	else
-		BountyHuntedMotionTracker.StopScanner()
+		BountyHuntedMotionTracker.GetClosestVignette()
 	end
 end
 
 function BountyHuntedMotionTracker:PLAYER_ENTERING_WORLD()
-	if (C_PvP.IsWarModeActive() == true) then
-		BountyHuntedMotionTracker.StartScanner()
-	else
-		BountyHuntedMotionTracker.StopScanner()
-	end
-
 	BountyHuntedMotionTracker.StartVeryFastTimer()
 	BountyHuntedMotionTracker.StartFastTimer()
 	BountyHuntedMotionTracker.StartNormalTimer()
@@ -209,20 +201,6 @@ function BountyHuntedMotionTracker.StartSoundIfNeeded(distance)
 		BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound = true
 	else
 		BountyHuntedMotionTracker.StopAllSounds()
-	end
-end
-
-function BountyHuntedMotionTracker.StartScanner()
-	if BountyHuntedMotionTracker.Scanner == nil then
-		local ticker = C_Timer.NewTicker(1, BountyHuntedMotionTracker.GetClosestVignette)
-		BountyHuntedMotionTracker.Scanner = ticker
-	end
-end
-
-function BountyHuntedMotionTracker.StopScanner()
-	if BountyHuntedMotionTracker.Scanner ~= nil then
-		BountyHuntedMotionTracker.Scanner:Cancel()
-		BountyHuntedMotionTracker.Scanner = nil
 	end
 end
 
