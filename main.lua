@@ -88,7 +88,6 @@ function BountyHuntedMotionTracker:ChatCommand(input)
 end
 
 function BountyHuntedMotionTracker:VIGNETTES_UPDATED()
-	print("VIGNETTES_UPDATED")
 	if (C_PvP.IsWarModeActive() == true) then
 		BountyHuntedMotionTracker.GetClosestVignette()
 	end
