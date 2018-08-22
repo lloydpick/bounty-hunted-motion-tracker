@@ -149,6 +149,7 @@ function BountyHuntedMotionTracker.GetVignettes()
 	
 	if WorldMapFrame.pinPools and WorldMapFrame.pinPools.VignettePinTemplate and WorldMapFrame.pinPools.VignettePinTemplate.activeObjects then
 		for vignette,_ in pairs(WorldMapFrame.pinPools.VignettePinTemplate.activeObjects) do
+			vignette:UpdatePosition()
 			vX, vY = vignette:GetPosition()
 			distance = BountyHuntedMotionTracker.GetDistanceTo(zone, pX, pY, vX, vY)
 			vignette.DistanceToPlayer = distance
