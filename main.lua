@@ -6,6 +6,7 @@ BountyHuntedMotionTracker.ShouldPlayNormalSound 		= false
 BountyHuntedMotionTracker.ShouldPlaySlowSound 			= false
 BountyHuntedMotionTracker.ShouldPlayVerySlowSound 		= false
 BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound 	= false
+BountyHuntedMotionTracker.Scanner = nil
 
 local defaults = {
     profile = {
@@ -71,10 +72,12 @@ end
 function BountyHuntedMotionTracker:OnEnable()
     -- Called when the addon is enabled
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 end
 
 function BountyHuntedMotionTracker:OnDisable()
     -- Called when the addon is disabled
+	BountyHuntedMotionTracker.StopScanner()
 end
 
 function BountyHuntedMotionTracker:ChatCommand(input)
@@ -85,9 +88,21 @@ function BountyHuntedMotionTracker:ChatCommand(input)
     end
 end
 
+function BountyHuntedMotionTracker:ZONE_CHANGED_NEW_AREA()
+	if (C_PvP.IsWarModeActive() == true) then
+		BountyHuntedMotionTracker.StartScanner()
+	else
+		BountyHuntedMotionTracker.StopScanner()
+	end
+end
+
 function BountyHuntedMotionTracker:PLAYER_ENTERING_WORLD()
-    BountyHuntedMotionTracker.StartScanner()
-		
+	if (C_PvP.IsWarModeActive() == true) then
+		BountyHuntedMotionTracker.StartScanner()
+	else
+		BountyHuntedMotionTracker.StopScanner()
+	end
+
 	BountyHuntedMotionTracker.StartVeryFastTimer()
 	BountyHuntedMotionTracker.StartFastTimer()
 	BountyHuntedMotionTracker.StartNormalTimer()
@@ -197,7 +212,17 @@ function BountyHuntedMotionTracker.StartSoundIfNeeded(distance)
 end
 
 function BountyHuntedMotionTracker.StartScanner()
-	C_Timer.NewTicker(1, BountyHuntedMotionTracker.GetClosestVignette)
+	if BountyHuntedMotionTracker.Scanner == nil then
+		local ticker = C_Timer.NewTicker(1, BountyHuntedMotionTracker.GetClosestVignette)
+		BountyHuntedMotionTracker.Scanner = ticker
+	end
+end
+
+function BountyHuntedMotionTracker.StopScanner()
+	if BountyHuntedMotionTracker.Scanner ~= nil then
+		BountyHuntedMotionTracker.Scanner:Cancel()
+		BountyHuntedMotionTracker.Scanner = nil
+	end
 end
 
 function BountyHuntedMotionTracker.StopAllSounds()
