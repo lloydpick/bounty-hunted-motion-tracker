@@ -14,7 +14,8 @@ BountyHuntedMotionTracker.MaxBounties = 10
 
 local defaults = {
     profile = {
-        channel = "Master"
+		channel = "Master",
+		locked = false
     },
 }
 
