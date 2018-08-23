@@ -344,31 +344,21 @@ function BountyHuntedMotionTracker.RefreshTrackerWidgets()
 	local y = 0
 	local nextWidget = 1
 	
-	local widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(nextWidget)
-	widget:ClearAllPoints()
-	widget:SetPoint("TOP", BountyHuntedMotionTracker.Frame, "TOP", 0, y)
-	widget.playerName:SetText("Player1")
-	widget.playerRace:SetText("Undead")
-	widget.playerDistance:SetText("150y")
-	widget.playerClass:SetTexCoord(unpack(CLASS_ICON_TCOORDS["HUNTER"]));
-	widget.NextArrowUpdate = -1
-	widget:SetScript ("OnUpdate", TrackerOnTick)
-	widget:Show()
+	for index, vignette in ipairs (BountyHuntedMotionTracker.OrderVignettesByDistance()) do
+		local widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(nextWidget)
+		ViragDevTool_AddData(vignette)
+		widget:ClearAllPoints()
+		widget:SetPoint("TOP", BountyHuntedMotionTracker.Frame, "TOP", 0, y)
+		widget.playerName:SetText(vignette.PlayerInfo.name)
+		widget.playerRace:SetText(vignette.PlayerInfo.raceName)
+		widget.playerClass:SetTexCoord(unpack(CLASS_ICON_TCOORDS[vignette.PlayerInfo.classId]));
+		widget.NextArrowUpdate = -1
+		widget:SetScript("OnUpdate", TrackerOnTick)
+		widget:Show()
 	
-	y = y - 50
-	nextWidget = nextWidget + 1
-	
-	widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(nextWidget)
-	widget:ClearAllPoints()
-	widget:SetPoint("TOP", BountyHuntedMotionTracker.Frame, "TOP", 0, y)
-	widget.playerName:SetText("Player2")
-	widget.playerRace:SetText("Tauren")
-	widget.playerDistance:SetText("175y")
-	widget.playerClass:SetTexCoord(unpack(CLASS_ICON_TCOORDS["PRIEST"]));
-	widget.NextArrowUpdate = -1
-	widget:SetScript ("OnUpdate", TrackerOnTick)
-	widget:Show()
-	
+		y = y - 50
+		nextWidget = nextWidget + 1
+	end	
 end
 
 function BountyHuntedMotionTracker.GetOrCreateTrackerWidget(index)
