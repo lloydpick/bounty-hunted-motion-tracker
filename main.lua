@@ -110,6 +110,7 @@ function BountyHuntedMotionTracker:PLAYER_ENTERING_WORLD()
 	BountyHuntedMotionTracker.StartSlowTimer()
 	BountyHuntedMotionTracker.StartVerySlowTimer()
 	BountyHuntedMotionTracker.StartVeryVerySlowTimer()
+	BountyHuntedMotionTracker.BuildFrame()
 end
 
 function spairs(t, order)
