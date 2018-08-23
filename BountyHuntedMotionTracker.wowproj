@@ -59,6 +59,12 @@
     <Content Include="libs\AceDB-3.0\AceDB-3.0.xml">
       <SubType>Frame</SubType>
     </Content>
+    <Content Include="libs\AceDBOptions-3.0\AceDBOptions-3.0.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="libs\AceDBOptions-3.0\AceDBOptions-3.0.xml">
+      <SubType>Frame</SubType>
+    </Content>
     <Content Include="libs\AceEvent-3.0\AceEvent-3.0.lua">
       <SubType>Code</SubType>
     </Content>
@@ -143,6 +149,12 @@
     <Content Include="libs\CallbackHandler-1.0\CallbackHandler-1.0.xml">
       <SubType>Frame</SubType>
     </Content>
+    <Content Include="libs\HereBeDragons\CallbackHandler-1.0\CallbackHandler-1.0.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="libs\HereBeDragons\CallbackHandler-1.0\CallbackHandler-1.0.xml">
+      <SubType>Frame</SubType>
+    </Content>
     <Content Include="libs\HereBeDragons\CHANGES.txt" />
     <Content Include="libs\HereBeDragons\HereBeDragons-1.0.lua">
       <SubType>Code</SubType>
@@ -159,12 +171,22 @@
     <Content Include="libs\HereBeDragons\HereBeDragons-Pins-2.0.lua">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="libs\HereBeDragons\HereBeDragons.toc">
+      <SubType>TableOfContents</SubType>
+    </Content>
+    <Content Include="libs\HereBeDragons\LibStub\LibStub.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="libs\HereBeDragons\LibStub\LibStub.toc">
+      <SubType>TableOfContents</SubType>
+    </Content>
     <Content Include="libs\LibStub\LibStub.lua">
       <SubType>Code</SubType>
     </Content>
     <Content Include="main.lua">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="pkgmeta.yaml" />
     <Content Include="sound\aliens-0.mp3" />
     <Content Include="sound\aliens-1.mp3" />
     <Content Include="sound\aliens-2.mp3" />
@@ -181,11 +203,14 @@
     <Folder Include="libs\AceConfig-3.0\AceConfigRegistry-3.0\" />
     <Folder Include="libs\AceConsole-3.0\" />
     <Folder Include="libs\AceDB-3.0\" />
+    <Folder Include="libs\AceDBOptions-3.0\" />
     <Folder Include="libs\AceEvent-3.0\" />
     <Folder Include="libs\AceGUI-3.0\" />
     <Folder Include="libs\AceGUI-3.0\widgets\" />
     <Folder Include="libs\CallbackHandler-1.0\" />
     <Folder Include="libs\HereBeDragons\" />
+    <Folder Include="libs\HereBeDragons\CallbackHandler-1.0\" />
+    <Folder Include="libs\HereBeDragons\LibStub\" />
     <Folder Include="libs\LibStub\" />
     <Folder Include="sound\" />
   </ItemGroup>
