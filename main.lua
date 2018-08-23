@@ -6,7 +6,11 @@ BountyHuntedMotionTracker.ShouldPlayNormalSound 		= false
 BountyHuntedMotionTracker.ShouldPlaySlowSound 			= false
 BountyHuntedMotionTracker.ShouldPlayVerySlowSound 		= false
 BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound 	= false
+BountyHuntedMotionTracker.playerIsMoving = false
 BountyHuntedMotionTracker.Bounties = {}
+BountyHuntedMotionTracker.Frame = nil
+BountyHuntedMotionTracker.LastTrackerRefresh = 0
+BountyHuntedMotionTracker.TrackerWidgetPool = {}
 
 local defaults = {
     profile = {
@@ -73,6 +77,8 @@ function BountyHuntedMotionTracker:OnEnable()
     -- Called when the addon is enabled
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("VIGNETTES_UPDATED")
+	self:RegisterEvent("PLAYER_STARTED_MOVING")
+	self:RegisterEvent("PLAYER_STOPPED_MOVING")
 end
 
 function BountyHuntedMotionTracker:OnDisable()
@@ -101,6 +107,13 @@ function BountyHuntedMotionTracker:PLAYER_ENTERING_WORLD()
 	BountyHuntedMotionTracker.StartSlowTimer()
 	BountyHuntedMotionTracker.StartVerySlowTimer()
 	BountyHuntedMotionTracker.StartVeryVerySlowTimer()
+end
+
+function BountyHuntedMotionTracker:PLAYER_STARTED_MOVING()
+	BountyHuntedMotionTracker.playerIsMoving = true
+end
+function BountyHuntedMotionTracker:PLAYER_STOPPED_MOVING()
+	BountyHuntedMotionTracker.playerIsMoving = false
 end
 
 function spairs(t, order)
@@ -141,16 +154,16 @@ function BountyHuntedMotionTracker.GetVignettes()
 	
 	if WorldMapFrame.pinPools and WorldMapFrame.pinPools.VignettePinTemplate and WorldMapFrame.pinPools.VignettePinTemplate.activeObjects then
 		for vignette,_ in pairs(WorldMapFrame.pinPools.VignettePinTemplate.activeObjects) do
-			vignette:UpdatePosition()
-			vX, vY = vignette:GetPosition()
-			distance = BountyHuntedMotionTracker.GetDistanceTo(zone, pX, pY, vX, vY)
-			vignette.DistanceToPlayer = distance
-			
 			-- some sanity checking on the vignette
 			name = vignette.vignetteInfo.atlasName
-			print(name)
 			if name == "poi-bountyplayer-alliance" or name == "poi-bountyplayer-horde" then
-				print("insertted")
+				vignette:UpdatePosition()
+				vX, vY = vignette:GetPosition()
+				distance = BountyHuntedMotionTracker.GetDistanceTo(zone, pX, pY, vX, vY)
+				vignette.DistanceToPlayer = distance
+				playerInfo = {}
+				playerInfo.className, playerInfo.classId, playerInfo.raceName, playerInfo.raceId, playerInfo.gender, playerInfo.name, playerInfo.realm = GetPlayerInfoByGUID(vignette:GetObjectGUID())
+				vignette.PlayerInfo = playerInfo
 				table.insert(vignettes, vignette)
 			end
 		end
@@ -279,4 +292,177 @@ end
 
 function BountyHuntedMotionTracker.StartVeryVerySlowTimer()
 	C_Timer.NewTicker(16, BountyHuntedMotionTracker.PlayVeryVerySlowSound)
+end
+
+local function getCoords(column, row)
+	local xstart = (column * 56) / 512
+	local ystart = (row * 42) / 512
+	local xend = ((column + 1) * 56) / 512
+	local yend = ((row + 1) * 42) / 512
+	return xstart, xend, ystart, yend
+end
+
+local texcoords = setmetatable({}, {__index = function(t, k)
+	local col,row = k:match("(%d+):(%d+)")
+	col,row = tonumber(col), tonumber(row)
+	local obj = {getCoords(col, row)}
+	rawset(t, k, obj)
+	return obj
+end})
+
+local TrackerOnTick = function (self, deltaTime)
+	if (self.NextArrowUpdate < 0) then
+	
+		local pipi = math.pi*2
+
+		local oX, oY = hbd:GetPlayerZonePosition()
+		local angle, distance = hbd:GetWorldVector(_, 42.0, 71.0, oX * 100, oY * 100)
+		local player = GetPlayerFacing()
+		angle = angle - player
+		
+		local cell = floor(angle / pipi * 108 + 0.5) % 108
+		local column = cell % 9
+		local row = floor(cell / 9)
+
+		local xstart = (column * 56) / 512
+		local ystart = (row * 42) / 512
+		local xend = ((column + 1) * 56) / 512
+		local yend = ((row + 1) * 42) / 512
+	
+		self.arrow:SetTexCoord(xstart,xend,ystart,yend)
+		self.playerDistance:SetText(floor(distance * 10) .. "y")
+		self.NextArrowUpdate = 0.016
+	else
+		self.NextArrowUpdate = self.NextArrowUpdate - deltaTime
+	end
+end
+
+function BountyHuntedMotionTracker.RefreshTrackerWidgets()
+
+	if (BountyHuntedMotionTracker.LastTrackerRefresh and BountyHuntedMotionTracker.LastTrackerRefresh+0.2 > GetTime()) then
+		return
+	end
+	BountyHuntedMotionTracker.LastTrackerRefresh = GetTime()
+	
+	local y = 0
+	local nextWidget = 1
+	
+	local widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(nextWidget)
+	widget:ClearAllPoints()
+	widget:SetPoint("TOP", BountyHuntedMotionTracker.Frame, "TOP", 0, y)
+	widget.playerName:SetText("Player1")
+	widget.playerRace:SetText("Undead")
+	widget.playerDistance:SetText("150y")
+	widget.playerClass:SetTexCoord(unpack(CLASS_ICON_TCOORDS["HUNTER"]));
+	widget.NextArrowUpdate = -1
+	widget:SetScript ("OnUpdate", TrackerOnTick)
+	widget:Show()
+	
+	y = y - 50
+	nextWidget = nextWidget + 1
+	
+	widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(nextWidget)
+	widget:ClearAllPoints()
+	widget:SetPoint("TOP", BountyHuntedMotionTracker.Frame, "TOP", 0, y)
+	widget.playerName:SetText("Player2")
+	widget.playerRace:SetText("Tauren")
+	widget.playerDistance:SetText("175y")
+	widget.playerClass:SetTexCoord(unpack(CLASS_ICON_TCOORDS["PRIEST"]));
+	widget.NextArrowUpdate = -1
+	widget:SetScript ("OnUpdate", TrackerOnTick)
+	widget:Show()
+	
+end
+
+function BountyHuntedMotionTracker.GetOrCreateTrackerWidget(index)
+	if (BountyHuntedMotionTracker.TrackerWidgetPool[index]) then
+		return BountyHuntedMotionTracker.TrackerWidgetPool[index]
+	end
+	
+	local f = CreateFrame("button", "BountyPanel" .. index, BountyHuntedMotionTracker.Frame)
+	f:SetSize(230, 50)
+	f:SetFrameStrata("LOW")
+	f:SetBackdrop({
+		bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+		edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+		tile = true, tileSize = 16, edgeSize = 16, 
+		insets = { left = 4, right = 4, top = 4, bottom = 4 }
+	})
+	f:SetBackdropColor(0, 0, 0)
+	f:SetPoint("TOP", BountyHuntedMotionTracker.Frame, "TOP", 0, -30)
+
+	f.playerName = f:CreateFontString("playerName", "OVERLAY")
+	f.playerName:SetFontObject(ObjectiveFont)
+	f.playerName:SetPoint("TOPLEFT", f, "TOPLEFT", 50, -12)
+	f.playerName:SetText("NAME")
+	
+	f.playerRace = f:CreateFontString("playerRace", "OVERLAY")
+	f.playerRace:SetFontObject(GameFontNormalSmall)
+	f.playerRace:SetPoint("TOPLEFT", f, "TOPLEFT", 50, -27)
+	f.playerRace:SetText("RACE")
+	
+	f.playerDistance = f:CreateFontString("playerRace", "OVERLAY")
+	f.playerDistance:SetFontObject(GameFontNormalSmall)
+	f.playerDistance:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -5, 5)
+	f.playerDistance:SetText("100y")
+	f.playerDistance:SetAlpha(.5)
+	
+	f.playerClass = f:CreateTexture("playerClass", "ARTWORK")
+    f.playerClass:SetWidth(25)
+    f.playerClass:SetHeight(25)
+    f.playerClass:SetPoint("TOPLEFT", 13, -12)
+    f.playerClass:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")
+	f.playerClass:SetTexCoord(unpack(CLASS_ICON_TCOORDS["ROGUE"]));
+	
+	f.playerClassBorder = f:CreateTexture("playerClassBorder", "OVERLAY")
+    f.playerClassBorder:SetWidth(64)
+    f.playerClassBorder:SetHeight(64)
+    f.playerClassBorder:SetPoint("TOPLEFT", 8, -7)
+    f.playerClassBorder:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+	
+	f.arrow = f:CreateTexture("playerArrow", "overlay")
+	f.arrow:SetPoint("RIGHT", f, "RIGHT", -5, 1)
+	f.arrow:SetSize(56, 42)
+	f.arrow:SetAlpha(.6)
+	f.arrow:SetTexture("Interface\\Addons\\TomTom\\Images\\Arrow")
+	
+	return f
+end
+
+
+function BountyHuntedMotionTracker.BuildFrame()
+	BountyHuntedMotionTracker.Frame = CreateFrame("frame", "BountyHuntedMotionTrackerScreenPanel", UIParent)
+	BountyHuntedMotionTracker.Frame:SetSize(235, 175)
+	BountyHuntedMotionTracker.Frame:SetFrameStrata("LOW")
+	BountyHuntedMotionTracker.Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	--BountyHuntedMotionTracker.Frame:SetBackdrop({
+	--	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+	--	edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+	--	tile = true, tileSize = 16, edgeSize = 16, 
+	--	insets = { left = 4, right = 4, top = 4, bottom = 4 }
+	--})
+	BountyHuntedMotionTracker.Frame:SetBackdropColor(0, 0, 0)
+	BountyHuntedMotionTracker.Frame:SetMovable(true)
+	BountyHuntedMotionTracker.Frame:EnableMouse(true)
+	
+	BountyHuntedMotionTracker.Frame:SetScript("OnMouseDown", function(self, button)
+		if button == "LeftButton" and not self.isMoving then
+			self:StartMoving();
+			self.isMoving = true;
+		end
+	end)
+	
+	BountyHuntedMotionTracker.Frame:SetScript("OnMouseUp", function(self, button)
+		if button == "LeftButton" and self.isMoving then
+			self:StopMovingOrSizing();
+			self.isMoving = false;
+		end
+	end)
+	
+	BountyHuntedMotionTracker.Frame:SetScript("OnHide", function(self)
+		if ( self.isMoving ) then
+			self:StopMovingOrSizing();
+			self.isMoving = false;
+		end
+	end)
 end
