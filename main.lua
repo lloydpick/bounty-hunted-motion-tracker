@@ -29,6 +29,7 @@ local options = {
 			args = {
 				channel = {
 					type = "select",
+					width = "full",
 					name = "Sound Channel",
 					desc = "The sound channel to use.",
 					values = function()
@@ -43,6 +44,14 @@ local options = {
 					get = function(info) return BountyHuntedMotionTracker.db.profile.channel end,
 					set = function(info,val) BountyHuntedMotionTracker.db.profile.channel = val end
 				},
+				locked = {
+					type = "toggle",
+					width = "full",
+					name = "Locked",
+					desc = "Locks/Unlocks the Frame",
+					get = function(info) return BountyHuntedMotionTracker.db.profile.locked end,
+					set = function(info,val) BountyHuntedMotionTracker.db.profile.locked = val; BountyHuntedMotionTracker:ToggleFrame(); end
+				}
 			}
 		},
 		profiles = {
@@ -54,6 +63,20 @@ local options = {
 }
 
 local hbd = LibStub("HereBeDragons-2.0")
+
+function BountyHuntedMotionTracker:ToggleFrame()
+	if BountyHuntedMotionTracker.db.profile.locked == true then
+		BountyHuntedMotionTracker.Frame:SetBackdrop({})
+	else
+		BountyHuntedMotionTracker.Frame:SetBackdrop({
+			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+			edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+			tile = true, tileSize = 16, edgeSize = 16, 
+			insets = { left = 4, right = 4, top = 4, bottom = 4 }
+		})
+		BountyHuntedMotionTracker.Frame:SetBackdropColor(0, 0, 0)
+	end
+end
 
 function BountyHuntedMotionTracker:Refresh()
 	db = self.db.profile
@@ -450,35 +473,32 @@ function BountyHuntedMotionTracker.BuildFrame()
 	BountyHuntedMotionTracker.Frame = CreateFrame("frame", "BountyHuntedMotionTrackerScreenPanel", UIParent)
 	BountyHuntedMotionTracker.Frame:SetSize(235, 500)
 	BountyHuntedMotionTracker.Frame:SetFrameStrata("LOW")
-	BountyHuntedMotionTracker.Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-	--BountyHuntedMotionTracker.Frame:SetBackdrop({
-	--	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	--	edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-	--	tile = true, tileSize = 16, edgeSize = 16, 
-	--	insets = { left = 4, right = 4, top = 4, bottom = 4 }
-	--})
-	BountyHuntedMotionTracker.Frame:SetBackdropColor(0, 0, 0)
+	BountyHuntedMotionTracker.Frame:ClearAllPoints()
+	
+	if BountyHuntedMotionTracker.db.profile.XPos then
+		BountyHuntedMotionTracker.Frame:SetPoint("BOTTOMLEFT", BountyHuntedMotionTracker.db.profile.XPos, BountyHuntedMotionTracker.db.profile.YPos)
+	else
+		BountyHuntedMotionTracker.Frame:SetPoint("CENTER")
+	end
+	
+	if BountyHuntedMotionTracker.db.profile.locked == false then
+		BountyHuntedMotionTracker.Frame:SetBackdrop({
+			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+			edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+			tile = true, tileSize = 16, edgeSize = 16, 
+			insets = { left = 4, right = 4, top = 4, bottom = 4 }
+		})
+		BountyHuntedMotionTracker.Frame:SetBackdropColor(0, 0, 0)
+	end
+	
 	BountyHuntedMotionTracker.Frame:SetMovable(true)
 	BountyHuntedMotionTracker.Frame:EnableMouse(true)
 	
-	BountyHuntedMotionTracker.Frame:SetScript("OnMouseDown", function(self, button)
-		if button == "LeftButton" and not self.isMoving then
-			self:StartMoving();
-			self.isMoving = true;
-		end
-	end)
-	
-	BountyHuntedMotionTracker.Frame:SetScript("OnMouseUp", function(self, button)
-		if button == "LeftButton" and self.isMoving then
-			self:StopMovingOrSizing();
-			self.isMoving = false;
-		end
-	end)
-	
-	BountyHuntedMotionTracker.Frame:SetScript("OnHide", function(self)
-		if ( self.isMoving ) then
-			self:StopMovingOrSizing();
-			self.isMoving = false;
-		end
+	BountyHuntedMotionTracker.Frame:RegisterForDrag("LeftButton")
+	BountyHuntedMotionTracker.Frame:SetScript("OnDragStart", BountyHuntedMotionTracker.Frame.StartMoving)
+	BountyHuntedMotionTracker.Frame:SetScript("OnDragStop", function(self)
+		self:StopMovingOrSizing()
+		BountyHuntedMotionTracker.db.profile.XPos = self:GetLeft()
+		BountyHuntedMotionTracker.db.profile.YPos = self:GetBottom()
 	end)
 end
