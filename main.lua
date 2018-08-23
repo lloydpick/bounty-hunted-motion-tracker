@@ -417,6 +417,7 @@ function BountyHuntedMotionTracker.GetOrCreateTrackerWidget(index)
 	f.arrow:SetAlpha(.6)
 	f.arrow:SetTexture("Interface\\Addons\\\BountyHuntedMotionTracker\\images\\Arrow")
 	
+	BountyHuntedMotionTracker.TrackerWidgetPool[index] = f
 	return f
 end
 
