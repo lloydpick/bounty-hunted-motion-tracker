@@ -448,7 +448,7 @@ end
 
 function BountyHuntedMotionTracker.BuildFrame()
 	BountyHuntedMotionTracker.Frame = CreateFrame("frame", "BountyHuntedMotionTrackerScreenPanel", UIParent)
-	BountyHuntedMotionTracker.Frame:SetSize(235, 175)
+	BountyHuntedMotionTracker.Frame:SetSize(235, 500)
 	BountyHuntedMotionTracker.Frame:SetFrameStrata("LOW")
 	BountyHuntedMotionTracker.Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 	--BountyHuntedMotionTracker.Frame:SetBackdrop({
