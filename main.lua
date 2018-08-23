@@ -103,7 +103,13 @@ end
 function BountyHuntedMotionTracker:ZONE_CHANGED_NEW_AREA()
 	if (C_PvP.IsWarModeActive() == true) then
 		BountyHuntedMotionTracker.Bounties = {}
-		BountyHuntedMotionTracker.RefreshTrackerWidgets()
+				
+		i = 1
+		while i <= 5 do
+			local widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(i)
+			widget:Hide()
+			i = i + 1
+		end
 	end
 end
 
@@ -374,6 +380,12 @@ function BountyHuntedMotionTracker.RefreshTrackerWidgets()
 		y = y - 50
 		nextWidget = nextWidget + 1
 	end	
+	
+	while nextWidget <= 5 do
+		local widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(nextWidget)
+		widget:Hide()
+		nextWidget = nextWidget + 1
+	end
 end
 
 function BountyHuntedMotionTracker.GetOrCreateTrackerWidget(index)
