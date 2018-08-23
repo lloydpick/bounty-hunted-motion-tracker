@@ -355,7 +355,9 @@ function BountyHuntedMotionTracker.RefreshTrackerWidgets()
 		widget:SetPoint("TOP", BountyHuntedMotionTracker.Frame, "TOP", 0, y)
 		widget.playerName:SetText(vignette.PlayerInfo.name)
 		widget.playerRace:SetText(vignette.PlayerInfo.raceName)
-		widget.playerClass:SetTexCoord(unpack(CLASS_ICON_TCOORDS[vignette.PlayerInfo.classId]));
+		if (vignette.PlayerInfo.classId ~= nil) then
+			widget.playerClass:SetTexCoord(unpack(CLASS_ICON_TCOORDS[vignette.PlayerInfo.classId]));
+		end
 		widget.NextArrowUpdate = -1
 		widget:SetScript("OnUpdate", TrackerOnTick)
 		widget:Show()
