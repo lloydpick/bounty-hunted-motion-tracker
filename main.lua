@@ -76,6 +76,7 @@ function BountyHuntedMotionTracker:OnEnable()
     -- Called when the addon is enabled
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("VIGNETTES_UPDATED")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 end
 
 function BountyHuntedMotionTracker:OnDisable()
@@ -94,6 +95,11 @@ end
 function BountyHuntedMotionTracker:VIGNETTES_UPDATED()
 	if (C_PvP.IsWarModeActive() == true) then
 		BountyHuntedMotionTracker.GetClosestVignette()
+
+function BountyHuntedMotionTracker:ZONE_CHANGED_NEW_AREA()
+	if (C_PvP.IsWarModeActive() == true) then
+		BountyHuntedMotionTracker.Bounties = {}
+		BountyHuntedMotionTracker.RefreshTrackerWidgets()
 	end
 end
 
