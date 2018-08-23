@@ -17,6 +17,9 @@
     <Content Include="embeds.xml">
       <SubType>Frame</SubType>
     </Content>
+    <Content Include="images\Arrow.blp" />
+    <Content Include="images\Arrow.m2" />
+    <Content Include="images\ArrowLicense.txt" />
     <Content Include="libs\AceAddon-3.0\AceAddon-3.0.lua">
       <SubType>Code</SubType>
     </Content>
@@ -195,6 +198,7 @@
     <Content Include="sound\aliens-5.mp3" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="images\" />
     <Folder Include="libs\" />
     <Folder Include="libs\AceAddon-3.0\" />
     <Folder Include="libs\AceConfig-3.0\" />

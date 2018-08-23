@@ -424,7 +424,7 @@ function BountyHuntedMotionTracker.GetOrCreateTrackerWidget(index)
 	f.arrow:SetPoint("RIGHT", f, "RIGHT", -5, 1)
 	f.arrow:SetSize(56, 42)
 	f.arrow:SetAlpha(.6)
-	f.arrow:SetTexture("Interface\\Addons\\TomTom\\Images\\Arrow")
+	f.arrow:SetTexture("Interface\\Addons\\\BountyHuntedMotionTracker\\images\\Arrow")
 	
 	return f
 end
