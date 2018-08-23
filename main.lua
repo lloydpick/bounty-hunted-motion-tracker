@@ -6,7 +6,6 @@ BountyHuntedMotionTracker.ShouldPlayNormalSound 		= false
 BountyHuntedMotionTracker.ShouldPlaySlowSound 			= false
 BountyHuntedMotionTracker.ShouldPlayVerySlowSound 		= false
 BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound 	= false
-BountyHuntedMotionTracker.playerIsMoving = false
 BountyHuntedMotionTracker.Bounties = {}
 BountyHuntedMotionTracker.Frame = nil
 BountyHuntedMotionTracker.LastTrackerRefresh = 0
@@ -77,8 +76,6 @@ function BountyHuntedMotionTracker:OnEnable()
     -- Called when the addon is enabled
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("VIGNETTES_UPDATED")
-	self:RegisterEvent("PLAYER_STARTED_MOVING")
-	self:RegisterEvent("PLAYER_STOPPED_MOVING")
 end
 
 function BountyHuntedMotionTracker:OnDisable()
@@ -107,13 +104,6 @@ function BountyHuntedMotionTracker:PLAYER_ENTERING_WORLD()
 	BountyHuntedMotionTracker.StartSlowTimer()
 	BountyHuntedMotionTracker.StartVerySlowTimer()
 	BountyHuntedMotionTracker.StartVeryVerySlowTimer()
-end
-
-function BountyHuntedMotionTracker:PLAYER_STARTED_MOVING()
-	BountyHuntedMotionTracker.playerIsMoving = true
-end
-function BountyHuntedMotionTracker:PLAYER_STOPPED_MOVING()
-	BountyHuntedMotionTracker.playerIsMoving = false
 end
 
 function spairs(t, order)
