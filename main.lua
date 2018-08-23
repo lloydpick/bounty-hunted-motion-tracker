@@ -94,7 +94,11 @@ end
 
 function BountyHuntedMotionTracker:VIGNETTES_UPDATED()
 	if (C_PvP.IsWarModeActive() == true) then
+		BountyHuntedMotionTracker.GetVignettes()
 		BountyHuntedMotionTracker.GetClosestVignette()
+		BountyHuntedMotionTracker.RefreshTrackerWidgets()
+	end
+end
 
 function BountyHuntedMotionTracker:ZONE_CHANGED_NEW_AREA()
 	if (C_PvP.IsWarModeActive() == true) then
