@@ -10,6 +10,7 @@ BountyHuntedMotionTracker.Bounties = {}
 BountyHuntedMotionTracker.Frame = nil
 BountyHuntedMotionTracker.LastTrackerRefresh = 0
 BountyHuntedMotionTracker.TrackerWidgetPool = {}
+BountyHuntedMotionTracker.MaxBounties = 10
 
 local defaults = {
     profile = {
@@ -105,7 +106,7 @@ function BountyHuntedMotionTracker:ZONE_CHANGED_NEW_AREA()
 		BountyHuntedMotionTracker.Bounties = {}
 				
 		i = 1
-		while i <= 5 do
+		while i <= BountyHuntedMotionTracker.MaxBounties do
 			local widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(i)
 			widget:Hide()
 			i = i + 1
@@ -381,7 +382,7 @@ function BountyHuntedMotionTracker.RefreshTrackerWidgets()
 		nextWidget = nextWidget + 1
 	end	
 	
-	while nextWidget <= 5 do
+	while nextWidget <= BountyHuntedMotionTracker.MaxBounties do
 		local widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(nextWidget)
 		widget:Hide()
 		nextWidget = nextWidget + 1
