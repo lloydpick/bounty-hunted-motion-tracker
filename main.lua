@@ -163,6 +163,7 @@ function BountyHuntedMotionTracker.GetVignettes()
 				distance = BountyHuntedMotionTracker.GetDistanceTo(zone, pX, pY, vX, vY)
 				vignette.DistanceToPlayer = distance
 				playerInfo = {}
+				playerInfo.zoneId = vignette.owningMap:GetMapID()
 				playerInfo.className, playerInfo.classId, playerInfo.raceName, playerInfo.raceId, playerInfo.gender, playerInfo.name, playerInfo.realm = GetPlayerInfoByGUID(vignette:GetObjectGUID())
 				vignette.PlayerInfo = playerInfo
 				table.insert(vignettes, vignette)
@@ -187,7 +188,12 @@ function BountyHuntedMotionTracker.OrderVignettesByDistance()
 	vignetteOrderDistance = {}
 	
 	for _, vignette in spairs(BountyHuntedMotionTracker.Bounties, function(t, a, b) return t[b].DistanceToPlayer > t[a].DistanceToPlayer end) do
-		table.insert(vignetteOrderDistance, vignette)
+	
+		-- only return bounties in our current zone
+		_, _, myPlayerZone = BountyHuntedMotionTracker.GetPlayerPosition()
+		if vignette.PlayerInfo.zoneId == myPlayerZone then
+			table.insert(vignetteOrderDistance, vignette)
+		end
 	end
 	
 	return vignetteOrderDistance
@@ -317,21 +323,24 @@ local TrackerOnTick = function (self, deltaTime)
 		local pipi = math.pi*2
 
 		local oX, oY = hbd:GetPlayerZonePosition()
-		local angle, distance = hbd:GetWorldVector(_, 42.0, 71.0, oX * 100, oY * 100)
-		local player = GetPlayerFacing()
-		angle = angle - player
+		bX, bY = self.bountyVignette:GetPosition()
+		if bX ~= nil and bY ~= nil then
+			local angle, distance = hbd:GetWorldVector(_, bX * 100, bY * 100, oX * 100, oY * 100)
+			local player = GetPlayerFacing()
+			angle = angle - player
 		
-		local cell = floor(angle / pipi * 108 + 0.5) % 108
-		local column = cell % 9
-		local row = floor(cell / 9)
+			local cell = floor(angle / pipi * 108 + 0.5) % 108
+			local column = cell % 9
+			local row = floor(cell / 9)
 
-		local xstart = (column * 56) / 512
-		local ystart = (row * 42) / 512
-		local xend = ((column + 1) * 56) / 512
-		local yend = ((row + 1) * 42) / 512
+			local xstart = (column * 56) / 512
+			local ystart = (row * 42) / 512
+			local xend = ((column + 1) * 56) / 512
+			local yend = ((row + 1) * 42) / 512
 	
-		self.arrow:SetTexCoord(xstart,xend,ystart,yend)
-		self.playerDistance:SetText(floor(distance * 10) .. "y")
+			self.arrow:SetTexCoord(xstart,xend,ystart,yend)
+			self.playerDistance:SetText(floor(distance * 10) .. "y")
+		end
 		self.NextArrowUpdate = 0.016
 	else
 		self.NextArrowUpdate = self.NextArrowUpdate - deltaTime
@@ -350,8 +359,8 @@ function BountyHuntedMotionTracker.RefreshTrackerWidgets()
 	
 	for index, vignette in ipairs (BountyHuntedMotionTracker.OrderVignettesByDistance()) do
 		local widget = BountyHuntedMotionTracker.GetOrCreateTrackerWidget(nextWidget)
-		ViragDevTool_AddData(vignette)
 		widget:ClearAllPoints()
+		widget.bountyVignette = vignette
 		widget:SetPoint("TOP", BountyHuntedMotionTracker.Frame, "TOP", 0, y)
 		widget.playerName:SetText(vignette.PlayerInfo.name)
 		widget.playerRace:SetText(vignette.PlayerInfo.raceName)
