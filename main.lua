@@ -181,7 +181,7 @@ end
 function BountyHuntedMotionTracker.OrderVignettesByDistance()
 	vignetteOrderDistance = {}
 	
-	for _, vignette in spairs(BountyHuntedMotionTracker.GetVignettes(), function(t, a, b) return t[b].DistanceToPlayer > t[a].DistanceToPlayer end) do
+	for _, vignette in spairs(BountyHuntedMotionTracker.Bounties, function(t, a, b) return t[b].DistanceToPlayer > t[a].DistanceToPlayer end) do
 		table.insert(vignetteOrderDistance, vignette)
 	end
 	
