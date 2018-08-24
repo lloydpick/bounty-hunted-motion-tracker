@@ -1,16 +1,17 @@
 BountyHuntedMotionTracker = LibStub("AceAddon-3.0"):NewAddon("BountyHuntedMotionTracker", "AceConsole-3.0", "AceEvent-3.0")
 
-BountyHuntedMotionTracker.ShouldPlayVeryFastSound 		= false
-BountyHuntedMotionTracker.ShouldPlayFastSound 			= false
-BountyHuntedMotionTracker.ShouldPlayNormalSound 		= false
-BountyHuntedMotionTracker.ShouldPlaySlowSound 			= false
-BountyHuntedMotionTracker.ShouldPlayVerySlowSound 		= false
-BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound 	= false
-BountyHuntedMotionTracker.Bounties = {}
-BountyHuntedMotionTracker.Frame = nil
+BountyHuntedMotionTracker.ShouldPlayVeryFastSound 	  = false
+BountyHuntedMotionTracker.ShouldPlayFastSound 		  = false
+BountyHuntedMotionTracker.ShouldPlayNormalSound 	  = false
+BountyHuntedMotionTracker.ShouldPlaySlowSound 		  = false
+BountyHuntedMotionTracker.ShouldPlayVerySlowSound 	  = false
+BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound = false
+
+BountyHuntedMotionTracker.Bounties			 = {}
+BountyHuntedMotionTracker.Frame			     = nil
 BountyHuntedMotionTracker.LastTrackerRefresh = 0
-BountyHuntedMotionTracker.TrackerWidgetPool = {}
-BountyHuntedMotionTracker.MaxBounties = 10
+BountyHuntedMotionTracker.TrackerWidgetPool  = {}
+BountyHuntedMotionTracker.MaxBounties		 = 10
 
 local defaults = {
     profile = {
@@ -104,14 +105,12 @@ function BountyHuntedMotionTracker:OnInitialize()
 end
 
 function BountyHuntedMotionTracker:OnEnable()
-    -- Called when the addon is enabled
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("VIGNETTES_UPDATED")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 end
 
 function BountyHuntedMotionTracker:OnDisable()
-    -- Called when the addon is disabled
 	BountyHuntedMotionTracker.StopScanner()
 end
 
@@ -210,15 +209,6 @@ function BountyHuntedMotionTracker.GetVignettes()
 	
 	BountyHuntedMotionTracker.Bounties = vignettes
 	return vignettes
-	
-	--if WorldMapFrame.pinPools and WorldMapFrame.pinPools.WorldMap_WorldQuestPinTemplate and WorldMapFrame.pinPools.WorldMap_WorldQuestPinTemplate.activeObjects then
-	--	for vignette,_ in pairs(WorldMapFrame.pinPools.WorldMap_WorldQuestPinTemplate.activeObjects) do
-	--		vX, vY = vignette:GetPosition()
-	--		distance = BountyHuntedMotionTracker.GetDistanceTo(zone, pX, pY, vX, vY)
-	--		vignette.DistanceToPlayer = distance
-	--		table.insert(vignettes, vignette)
-	--	end
-	--end
 end
 
 function BountyHuntedMotionTracker.OrderVignettesByDistance()
