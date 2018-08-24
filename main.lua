@@ -68,6 +68,9 @@ local hbd = LibStub("HereBeDragons-2.0")
 function BountyHuntedMotionTracker:ToggleFrame()
 	if BountyHuntedMotionTracker.db.profile.locked == true then
 		BountyHuntedMotionTracker.Frame:SetBackdrop({})
+		BountyHuntedMotionTracker.Frame:SetMovable(false)
+		BountyHuntedMotionTracker.Frame:EnableMouse(false)
+		BountyHuntedMotionTracker.Frame:RegisterForDrag(nil)
 	else
 		BountyHuntedMotionTracker.Frame:SetBackdrop({
 			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
@@ -76,6 +79,9 @@ function BountyHuntedMotionTracker:ToggleFrame()
 			insets = { left = 4, right = 4, top = 4, bottom = 4 }
 		})
 		BountyHuntedMotionTracker.Frame:SetBackdropColor(0, 0, 0)
+		BountyHuntedMotionTracker.Frame:SetMovable(true)
+		BountyHuntedMotionTracker.Frame:EnableMouse(true)
+		BountyHuntedMotionTracker.Frame:RegisterForDrag("LeftButton")
 	end
 end
 
@@ -490,12 +496,11 @@ function BountyHuntedMotionTracker.BuildFrame()
 			insets = { left = 4, right = 4, top = 4, bottom = 4 }
 		})
 		BountyHuntedMotionTracker.Frame:SetBackdropColor(0, 0, 0)
+		BountyHuntedMotionTracker.Frame:SetMovable(true)
+		BountyHuntedMotionTracker.Frame:EnableMouse(true)
+		BountyHuntedMotionTracker.Frame:RegisterForDrag("LeftButton")
 	end
 	
-	BountyHuntedMotionTracker.Frame:SetMovable(true)
-	BountyHuntedMotionTracker.Frame:EnableMouse(true)
-	
-	BountyHuntedMotionTracker.Frame:RegisterForDrag("LeftButton")
 	BountyHuntedMotionTracker.Frame:SetScript("OnDragStart", BountyHuntedMotionTracker.Frame.StartMoving)
 	BountyHuntedMotionTracker.Frame:SetScript("OnDragStop", function(self)
 		self:StopMovingOrSizing()
