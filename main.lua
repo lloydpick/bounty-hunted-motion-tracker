@@ -467,6 +467,10 @@ end
 
 
 function BountyHuntedMotionTracker.BuildFrame()
+	if (BountyHuntedMotionTracker.Frame) then
+		return BountyHuntedMotionTracker.Frame
+	end
+	
 	BountyHuntedMotionTracker.Frame = CreateFrame("frame", "BountyHuntedMotionTrackerScreenPanel", UIParent)
 	BountyHuntedMotionTracker.Frame:SetSize(235, 500)
 	BountyHuntedMotionTracker.Frame:SetFrameStrata("LOW")
