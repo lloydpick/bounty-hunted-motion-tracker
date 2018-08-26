@@ -161,6 +161,7 @@ end
 function BountyHuntedMotionTracker:ZONE_CHANGED_NEW_AREA()
 	if (C_PvP.IsWarModeActive() == true) then
 		BountyHuntedMotionTracker.Bounties = {}
+		BountyHuntedMotionTracker.StopAllSounds()
 				
 		i = 1
 		while i <= BountyHuntedMotionTracker.MaxBounties do
