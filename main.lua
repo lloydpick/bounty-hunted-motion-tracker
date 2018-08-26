@@ -16,7 +16,8 @@ BountyHuntedMotionTracker.MaxBounties		 = 10
 local defaults = {
     profile = {
 		channel = "Master",
-		locked = false
+		locked = false,
+		sounds = true
     },
 }
 
@@ -25,11 +26,39 @@ local options = {
     handler = BountyHuntedMotionTracker,
     type = "group",
     args = {
-		general = {
+		ui = {
 			type = "group",
-			name = "General",
+			name = "User Interface",
+			order = 1,
 			args = {
+				locked = {
+					type = "toggle",
+					width = "full",
+					name = "Locked",
+					desc = "Locks/Unlocks the Frame",
+					descStyle = "inline",
+					get = function(info) return BountyHuntedMotionTracker.db.profile.locked end,
+					set = function(info,val) BountyHuntedMotionTracker.db.profile.locked = val; BountyHuntedMotionTracker:ToggleFrame(); end
+				}
+			}
+		},
+		sound = {
+			type = "group",
+			name = "Sounds",
+			order = 2,
+			args = {
+				sounds = {
+					order = 1,
+					type = "toggle",
+					width = "full",
+					name = "Enabled",
+					desc = "Enables/Disables the sounds",
+					descStyle = "inline",
+					get = function(info) return BountyHuntedMotionTracker.db.profile.sounds end,
+					set = function(info,val) BountyHuntedMotionTracker.db.profile.sounds = val end
+				},
 				channel = {
+					order = 2,
 					type = "select",
 					width = "full",
 					name = "Sound Channel",
@@ -46,19 +75,18 @@ local options = {
 					get = function(info) return BountyHuntedMotionTracker.db.profile.channel end,
 					set = function(info,val) BountyHuntedMotionTracker.db.profile.channel = val end
 				},
-				locked = {
-					type = "toggle",
+				text = {
+					order = 3,
+					type = "description",
 					width = "full",
-					name = "Locked",
-					desc = "Locks/Unlocks the Frame",
-					get = function(info) return BountyHuntedMotionTracker.db.profile.locked end,
-					set = function(info,val) BountyHuntedMotionTracker.db.profile.locked = val; BountyHuntedMotionTracker:ToggleFrame(); end
-				}
+					name = "Select which sound channel you want alerts to be played through"
+				},
 			}
 		},
 		profiles = {
 			type = "group",
 			name = "Profiles",
+			order = 3,
 			args = {}
 		}
     },
@@ -269,38 +297,50 @@ function BountyHuntedMotionTracker.StopAllSounds()
 end
 
 function BountyHuntedMotionTracker.PlayVeryFastSound()
-	if BountyHuntedMotionTracker.ShouldPlayVeryFastSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-5.mp3", BountyHuntedMotionTracker.db.profile.channel)
+	if BountyHuntedMotionTracker.db.profile.sounds then
+		if BountyHuntedMotionTracker.ShouldPlayVeryFastSound then
+			PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-5.mp3", BountyHuntedMotionTracker.db.profile.channel)
+		end
 	end
 end
 
 function BountyHuntedMotionTracker.PlayFastSound()
-	if BountyHuntedMotionTracker.ShouldPlayFastSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-4.mp3", BountyHuntedMotionTracker.db.profile.channel)
+	if BountyHuntedMotionTracker.db.profile.sounds then
+		if BountyHuntedMotionTracker.ShouldPlayFastSound then
+			PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-4.mp3", BountyHuntedMotionTracker.db.profile.channel)
+		end
 	end
 end
 
 function BountyHuntedMotionTracker.PlayNormalSound()
-	if BountyHuntedMotionTracker.ShouldPlayNormalSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-3.mp3", BountyHuntedMotionTracker.db.profile.channel)
+	if BountyHuntedMotionTracker.db.profile.sounds then
+		if BountyHuntedMotionTracker.ShouldPlayNormalSound then
+			PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-3.mp3", BountyHuntedMotionTracker.db.profile.channel)
+		end
 	end
 end
 
 function BountyHuntedMotionTracker.PlaySlowSound()
-	if BountyHuntedMotionTracker.ShouldPlaySlowSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-2.mp3", BountyHuntedMotionTracker.db.profile.channel)
+	if BountyHuntedMotionTracker.db.profile.sounds then
+		if BountyHuntedMotionTracker.ShouldPlaySlowSound then
+			PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-2.mp3", BountyHuntedMotionTracker.db.profile.channel)
+		end
 	end
 end
 
 function BountyHuntedMotionTracker.PlayVerySlowSound()
-	if BountyHuntedMotionTracker.ShouldPlayVerySlowSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-1.mp3", BountyHuntedMotionTracker.db.profile.channel)
+	if BountyHuntedMotionTracker.db.profile.sounds then
+		if BountyHuntedMotionTracker.ShouldPlayVerySlowSound then
+			PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-1.mp3", BountyHuntedMotionTracker.db.profile.channel)
+		end
 	end
 end
 
 function BountyHuntedMotionTracker.PlayVeryVerySlowSound()
-	if BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound then
-		PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-0.mp3", BountyHuntedMotionTracker.db.profile.channel)
+	if BountyHuntedMotionTracker.db.profile.sounds then
+		if BountyHuntedMotionTracker.ShouldPlayVeryVerySlowSound then
+			PlaySoundFile("Interface\\AddOns\\BountyHuntedMotionTracker\\sound\\aliens-0.mp3", BountyHuntedMotionTracker.db.profile.channel)
+		end
 	end
 end
 
